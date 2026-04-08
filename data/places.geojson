@@ -1,0 +1,16 @@
+{
+"type": "FeatureCollection",
+"name": "places",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "name_input": "Saint Petersburg/Sankt-Peterburg", "name_modern": "Saint Petersburg", "name_local": "Санкт-Петербург", "country": "Russia", "query_used": "Saint Petersburg, Russia", "notes": "Modern point for the city.", "order": 1 }, "geometry": { "type": "Point", "coordinates": [ 30.30861, 59.9375 ] } },
+{ "type": "Feature", "properties": { "fid": 2, "name_input": "Mosca/Moskva", "name_modern": "Moscow", "name_local": "Москва", "country": "Russia", "query_used": "Moscow, Russia", "notes": "Modern point for the city.", "order": 2 }, "geometry": { "type": "Point", "coordinates": [ 37.61778, 55.75583 ] } },
+{ "type": "Feature", "properties": { "fid": 3, "name_input": "Kazan'", "name_modern": "Kazan", "name_local": "Казань", "country": "Russia", "query_used": "Kazan, Tatarstan, Russia", "notes": "Modern point for the city.", "order": 3 }, "geometry": { "type": "Point", "coordinates": [ 49.10889, 55.79639 ] } },
+{ "type": "Feature", "properties": { "fid": 4, "name_input": "Tobolsk", "name_modern": "Tobolsk", "name_local": "Тобольск", "country": "Russia", "query_used": "Tobolsk, Tyumen Oblast, Russia", "notes": "Modern point for the city.", "order": 4 }, "geometry": { "type": "Point", "coordinates": [ 68.267, 58.2 ] } },
+{ "type": "Feature", "properties": { "fid": 5, "name_input": "Irkutsk", "name_modern": "Irkutsk", "name_local": "Иркутск", "country": "Russia", "query_used": "Irkutsk, Russia", "notes": "Modern point for the city.", "order": 5 }, "geometry": { "type": "Point", "coordinates": [ 104.28, 52.28917 ] } },
+{ "type": "Feature", "properties": { "fid": 6, "name_input": "Kjachta", "name_modern": "Kyakhta", "name_local": "Кяхта", "country": "China", "query_used": "Kyakhta, Buryatia, Russia", "notes": "Modern point for the town.", "order": 6 }, "geometry": { "type": "Point", "coordinates": [ 106.45, 50.35 ] } },
+{ "type": "Feature", "properties": { "fid": 7, "name_input": "Majmačin (Maimaicheng)", "name_modern": "Altanbulag", "name_local": "Алтанбулаг", "country": "China", "query_used": "Altanbulag, Selenge, Mongolia", "notes": "Used as the modern successor/locality corresponding to historic Maimaicheng, opposite Kyakhta. Although the historic settlement was on the Qing side, the modern locality is in Mongolia, not China.", "order": 7 }, "geometry": { "type": "Point", "coordinates": [ 106.50167, 50.31194 ] } },
+{ "type": "Feature", "properties": { "fid": 8, "name_input": "Kalgan (Zhangjiakou)", "name_modern": "Zhangjiakou", "name_local": "张家口", "country": "China", "query_used": "Zhangjiakou, Hebei, China", "notes": "Using the modern municipal-government point reported by Wikipedia.", "order": 8 }, "geometry": { "type": "Point", "coordinates": [ 114.886, 40.769 ] } },
+{ "type": "Feature", "properties": { "fid": 9, "name_input": "Beijing", "name_modern": "Beijing", "name_local": "北京", "country": "China", "query_used": "Beijing, China", "notes": "Using the Tiananmen Square national-flag coordinate reported by Wikipedia.", "order": 9 }, "geometry": { "type": "Point", "coordinates": [ 116.3975, 39.90667 ] } }
+]
+}
