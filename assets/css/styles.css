@@ -60,6 +60,10 @@ body {
   margin-bottom: 14px;
 }
 
+.leaflet-bottom.leaflet-left .leaflet-control {
+  margin-left: 14px;
+}
+
 .leaflet-control-attribution {
   background: rgba(0, 0, 0, 0.58) !important;
   color: rgba(255, 255, 255, 0.72);
@@ -177,11 +181,12 @@ body {
 .legend-control {
   padding: 12px 14px;
   border-radius: 16px;
-  min-width: 220px;
+  min-width: 320px;
+  max-width: min(440px, calc(100vw - 28px));
 }
 
 .legend-control h3 {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -194,7 +199,8 @@ body {
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 8px;
+  gap: 8px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .legend-control li {
@@ -281,7 +287,7 @@ body {
 
 .map-note {
   position: fixed;
-  left: 14px;
+  right: 14px;
   bottom: 14px;
   z-index: 1200;
   max-width: min(500px, calc(100vw - 28px));
@@ -481,6 +487,15 @@ body {
   object-fit: contain;
 }
 
+.place-marker__pulse,
+.place-marker__icon,
+.place-marker__icon img,
+.place-marker__badge,
+.ship-marker,
+.ship-marker img {
+  pointer-events: none;
+}
+
 .place-marker__badge {
   position: absolute;
   top: -2px;
@@ -567,4 +582,156 @@ body {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.01em;
+}
+
+
+.legend-route,
+.legend-river,
+.legend-secondary {
+  flex: 0 0 auto;
+}
+
+.legend-route {
+  width: 22px;
+  height: 0;
+  border-top: 3px solid #f3e4cf;
+}
+
+.legend-route--fluvial {
+  border-top-color: #68c1ff;
+}
+
+.legend-route--road {
+  border-top-color: #f3e4cf;
+}
+
+.legend-route--other {
+  border-top: 3px dashed #d6c5a8;
+}
+
+.legend-river {
+  width: 22px;
+  height: 0;
+  border-top: 2px solid #5cbcf0;
+  opacity: 0.85;
+}
+
+.legend-secondary {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--secondary-topo-fill, #ff4b4b);
+  border: 1px solid var(--secondary-topo-stroke, rgba(255, 255, 255, 0.22));
+}
+
+.route-tooltip {
+  max-width: 340px;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.route-tooltip .route-tooltip__inner {
+  display: grid;
+  gap: 4px;
+}
+
+.ship-marker {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.38));
+}
+
+.ship-marker img {
+  width: 18px;
+  height: 18px;
+  display: block;
+  object-fit: contain;
+  filter: var(--ship-filter, none);
+}
+
+
+body[data-theme="dark"],
+body[data-theme="satellite"] {
+  --secondary-topo-fill: #ff4b4b;
+  --secondary-topo-stroke: rgba(255, 255, 255, 0.16);
+  --ship-filter: brightness(0) invert(1);
+}
+
+body[data-theme="light"],
+body[data-theme="political"] {
+  --secondary-topo-fill: #111111;
+  --secondary-topo-stroke: rgba(0, 0, 0, 0.26);
+  --ship-filter: none;
+}
+
+.toolbar-toggle {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-soft);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.toolbar-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.map-toolbar__section.is-collapsed .map-toolbar__body,
+.map-toolbar__section.is-collapsed .map-toolbar__footer,
+.legend-control.is-collapsed .legend-control__body {
+  display: none;
+}
+
+.map-toolbar__section.is-collapsed .toolbar-toggle i,
+.legend-control.is-collapsed .legend-control__toggle i {
+  transform: rotate(180deg);
+}
+
+.legend-control__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.legend-control.is-collapsed {
+  min-width: 0;
+  width: auto;
+}
+
+.legend-control.is-collapsed .legend-control__header {
+  margin-bottom: 0;
+}
+
+.legend-control li {
+  min-width: 0;
+}
+
+.map-toolbar__section:last-child .map-toolbar__header {
+  padding-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .legend-control {
+    min-width: 250px;
+  }
+
+  .legend-control ul {
+    grid-template-columns: 1fr;
+  }
+
+  .map-note {
+    right: 14px;
+    left: 14px;
+    max-width: none;
+  }
 }

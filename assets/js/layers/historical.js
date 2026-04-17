@@ -37,9 +37,6 @@ function makeFeatureHandlers({ countryConfig, modal, kicker, subtitle, styleStat
     });
 
     layer.on('mouseover', () => {
-      if (layer.bringToFront) {
-        layer.bringToFront();
-      }
       layer.setStyle(styleState.current.highlightStyle);
     });
 
@@ -47,7 +44,7 @@ function makeFeatureHandlers({ countryConfig, modal, kicker, subtitle, styleStat
   };
 }
 
-export function createHistoricalCountryLayers(rawGeoJson, countryConfig, stateFeatureName, modal, initialTheme = 'dark') {
+export function createHistoricalCountryLayers(rawGeoJson, countryConfig, stateFeatureName, modal, initialTheme = 'dark', map = null) {
   const { stateFeature, provinces } = splitStateAndProvinces(
     rawGeoJson,
     stateFeatureName,
@@ -58,16 +55,12 @@ export function createHistoricalCountryLayers(rawGeoJson, countryConfig, stateFe
     current: resolveTheme(countryConfig, initialTheme),
   };
 
-  const baseGeoJsonOptions = {
-    bubblingMouseEvents: false,
-    smoothFactor: 0.5,
-  };
-
   const provincesLayer = L.geoJSON(safeFeatureCollection(provinces), {
-    ...baseGeoJsonOptions,
+    bubblingMouseEvents: false,
+    smoothFactor: 1.1,
+    renderer: map?.appRenderers?.historicalProvinces,
     interactive: true,
     pane: 'historicalProvinces',
-    renderer: L.svg(),
     style: () => styleState.current.provinceStyle,
     onEachFeature: makeFeatureHandlers({
       countryConfig,
@@ -79,10 +72,11 @@ export function createHistoricalCountryLayers(rawGeoJson, countryConfig, stateFe
   });
 
   const stateLayer = L.geoJSON(stateFeature ? safeFeatureCollection([stateFeature]) : safeFeatureCollection([]), {
-    ...baseGeoJsonOptions,
+    bubblingMouseEvents: false,
+    smoothFactor: 1.1,
+    renderer: map?.appRenderers?.historicalStates,
     interactive: false,
     pane: 'historicalStates',
-    renderer: L.svg(),
     style: () => styleState.current.stateStyle,
   });
 

@@ -104,3 +104,32 @@ export function buildPlaceRows(feature) {
     },
   ].filter((row) => row.value !== null && row.value !== undefined && row.value !== '');
 }
+
+export function buildRouteRows(feature) {
+  const props = feature?.properties ?? {};
+  return [
+    { label: 'Tipo', value: props.type ?? '—' },
+    { label: 'Descrizione', value: props.descrizione ?? props.description ?? '—' },
+    { label: 'Lunghezza', value: props.lenght_km ?? props.length_km ?? '—' },
+  ].filter((row) => row.value !== null && row.value !== undefined && row.value !== '');
+}
+
+export function buildSecondaryPlaceRows(feature) {
+  const props = feature?.properties ?? {};
+  const [lon, lat] = feature?.geometry?.coordinates ?? [];
+
+  return [
+    { label: 'Nome antico', value: props.nome_antico ?? '—' },
+    { label: 'Nome moderno', value: props.nome_moderno ?? '—' },
+    { label: 'Nome originale', value: props.nome_originale ?? '—' },
+    { label: 'Tipologia', value: props.tipologia ?? '—' },
+    { label: 'Display name', value: props.display_name ?? '—' },
+    { label: 'Match score', value: props.match_score ?? '—' },
+    { label: 'Metodo geometria', value: props.geometry_method ?? '—' },
+    { label: 'Query associata', value: props.matched_query ?? '—' },
+    {
+      label: 'Coordinate',
+      value: lon !== undefined && lat !== undefined ? `${lat.toFixed(4)}, ${lon.toFixed(4)}` : '—',
+    },
+  ].filter((row) => row.value !== null && row.value !== undefined && row.value !== '');
+}

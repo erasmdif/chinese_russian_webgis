@@ -4,7 +4,8 @@ import { createUnionBounds } from './core/utils.js';
 import { loadDatasets } from './data/loader.js';
 import { createBaseMaps } from './layers/basemaps.js';
 import { createHistoricalCountryLayers } from './layers/historical.js';
-import { createPlacesLayers } from './layers/markers.js';
+import { createPlacesLayers, createSecondaryTopoLayer } from './layers/markers.js';
+import { createMissionaryPathLayer, createRiversLayer } from './layers/route.js';
 import { createSharedBorderLayer } from './layers/border.js';
 import { createInfoModal } from './ui/modal.js';
 import { addLegend } from './ui/legend.js';
@@ -17,6 +18,7 @@ async function init() {
 
   const baseMaps = createBaseMaps();
   const defaultBaseKey = APP_CONFIG.ui.defaultBase in baseMaps ? APP_CONFIG.ui.defaultBase : 'dark';
+  document.body.dataset.theme = defaultBaseKey;
   baseMaps[defaultBaseKey].layer.addTo(map);
 
   try {
@@ -27,7 +29,8 @@ async function init() {
       APP_CONFIG.countries.china,
       APP_CONFIG.stateFeatureNames.china,
       modal,
-      defaultBaseKey
+      defaultBaseKey,
+      map
     );
 
     const russiaLayers = createHistoricalCountryLayers(
@@ -35,19 +38,38 @@ async function init() {
       APP_CONFIG.countries.russia,
       APP_CONFIG.stateFeatureNames.russia,
       modal,
-      defaultBaseKey
+      defaultBaseKey,
+      map
     );
 
     const placesLayers = createPlacesLayers(
       datasets.places,
       modal,
       APP_CONFIG.icons,
-      APP_CONFIG.routeStyle,
       APP_CONFIG.places.clustering
+    );
+
+    const missionaryPathLayer = createMissionaryPathLayer(
+      datasets.missionaryPath,
+      modal,
+      APP_CONFIG.missionaryPathStyle,
+      APP_CONFIG.icons.ship,
+      map
+    );
+
+    const riversLayer = createRiversLayer(datasets.rivers, APP_CONFIG.riversStyle, map);
+    const secondaryTopo = createSecondaryTopoLayer(
+      datasets.otherTopo,
+      modal,
+      APP_CONFIG.places.secondaryRadius,
+      APP_CONFIG.otherTopoStyles,
+      defaultBaseKey,
+      map
     );
 
     chinaLayers.applyTheme(defaultBaseKey);
     russiaLayers.applyTheme(defaultBaseKey);
+    secondaryTopo.applyTheme(defaultBaseKey);
 
     const sharedBorder = createSharedBorderLayer(
       chinaLayers.stateFeature,
@@ -64,7 +86,8 @@ async function init() {
     if (sharedBorder.layer.getLayers().length) {
       sharedBorder.layer.addTo(map);
     }
-    placesLayers.route.addTo(map);
+    missionaryPathLayer.addTo(map);
+    secondaryTopo.layer.addTo(map);
     placesLayers.markers.addTo(map);
 
     const fitCandidates = [
@@ -73,6 +96,8 @@ async function init() {
       russiaLayers.provincesLayer,
       russiaLayers.stateLayer,
       placesLayers.markers,
+      missionaryPathLayer,
+      secondaryTopo.layer,
     ];
 
     const boundsCollector = [];
@@ -96,8 +121,10 @@ async function init() {
       defaultBaseKey,
       initialBounds: masterBounds,
       onBaseChange: (baseKey) => {
+        document.body.dataset.theme = baseKey;
         chinaLayers.applyTheme(baseKey);
         russiaLayers.applyTheme(baseKey);
+        secondaryTopo.applyTheme(baseKey);
       },
       overlays: {
         chinaProvinces: {
@@ -120,15 +147,25 @@ async function init() {
           icon: 'bi-bezier2',
           layer: sharedBorder.layer,
         },
+        route: {
+          label: 'Percorso',
+          icon: 'bi-signpost-split-fill',
+          layer: missionaryPathLayer,
+        },
+        rivers: {
+          label: 'Fiumi',
+          icon: 'bi-water',
+          layer: riversLayer,
+        },
         stops: {
           label: 'Tappe',
           icon: 'bi-geo-alt-fill',
           layer: placesLayers.markers,
         },
-        route: {
-          label: 'Percorso',
-          icon: 'bi-signpost-split-fill',
-          layer: placesLayers.route,
+        otherTopo: {
+          label: 'Toponimi',
+          icon: 'bi-record-circle',
+          layer: secondaryTopo.layer,
         },
       },
     });
@@ -137,13 +174,22 @@ async function init() {
 
     const warnings = [];
     if (!(datasets.china.features ?? []).length) {
-      warnings.push('china_1820.geojson è ancora vuoto.');
+      warnings.push('china_1820.geojson è assente o vuoto.');
     }
     if (!(datasets.russia.features ?? []).length) {
-      warnings.push('russia_1820.geojson è ancora vuoto.');
+      warnings.push('russia_1820.geojson è assente o vuoto.');
     }
     if (!(datasets.places.features ?? []).length) {
-      warnings.push('places.geojson non contiene punti.');
+      warnings.push('places.geojson è assente o non contiene punti.');
+    }
+    if (!(datasets.missionaryPath.features ?? []).length) {
+      warnings.push('missionary_path.geojson è assente o vuoto.');
+    }
+    if (!(datasets.rivers.features ?? []).length) {
+      warnings.push('rivers.geojson non è stato caricato: il layer rimane disponibile ma vuoto.');
+    }
+    if (!(datasets.otherTopo.features ?? []).length) {
+      warnings.push('other_topo.geojson non è stato caricato: il layer dei toponimi secondari è vuoto.');
     }
     if (
       !sharedBorder.lengthKm &&

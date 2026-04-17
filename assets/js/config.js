@@ -3,10 +3,14 @@ export const APP_CONFIG = {
     china: 'data/china_1820.geojson',
     russia: 'data/russia_1820.geojson',
     places: 'data/places.geojson',
+    missionaryPath: 'data/missionary_path.geojson',
+    rivers: 'data/rivers.geojson',
+    otherTopo: 'data/other_topo.geojson',
   },
   icons: {
     china: 'images/china.svg',
     russia: 'images/russia.svg',
+    ship: 'images/ship.svg',
     fallback: 'images/china.svg',
   },
   initialView: {
@@ -31,6 +35,7 @@ export const APP_CONFIG = {
       disableClusteringAtZoom: 7,
       spiderfyOnMaxZoom: true,
     },
+    secondaryRadius: 5,
   },
   countries: {
     china: {
@@ -262,19 +267,94 @@ export const APP_CONFIG = {
       },
     },
   },
-  routeStyle: {
-    glow: {
-      color: '#ff2b2b',
-      weight: 5,
-      opacity: 0.16,
-      lineCap: 'round',
+  missionaryPathStyle: {
+    fluvial: {
+      casing: {
+        color: 'rgba(32, 64, 92, 0.44)',
+        weight: 8,
+        opacity: 0.58,
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+      line: {
+        color: '#68c1ff',
+        weight: 4,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+      shipSpacingKm: 360,
     },
-    main: {
-      color: '#ffffff',
-      weight: 2,
-      opacity: 0.55,
-      dashArray: '8 8',
-      lineCap: 'round',
+    road: {
+      casing: {
+        color: 'rgba(10, 10, 10, 0.30)',
+        weight: 7,
+        opacity: 0.48,
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+      line: {
+        color: '#f3e4cf',
+        weight: 3.2,
+        opacity: 0.9,
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+    },
+    other: {
+      casing: {
+        color: 'rgba(10, 10, 10, 0.22)',
+        weight: 6,
+        opacity: 0.34,
+        lineCap: 'round',
+        lineJoin: 'round',
+      },
+      line: {
+        color: '#d6c5a8',
+        weight: 2.6,
+        opacity: 0.82,
+        lineCap: 'round',
+        lineJoin: 'round',
+        dashArray: '9 8',
+      },
+    },
+    tooltipMaxWidth: 340,
+  },
+  riversStyle: {
+    color: '#5cbcf0',
+    weight: 1.5,
+    opacity: 0.58,
+    lineCap: 'round',
+    lineJoin: 'round',
+  },
+  otherTopoStyles: {
+    dark: {
+      color: '#ff4b4b',
+      weight: 1.6,
+      opacity: 0.98,
+      fillColor: '#ff4b4b',
+      fillOpacity: 0.9,
+    },
+    light: {
+      color: '#111111',
+      weight: 1.6,
+      opacity: 0.96,
+      fillColor: '#111111',
+      fillOpacity: 0.82,
+    },
+    political: {
+      color: '#111111',
+      weight: 1.6,
+      opacity: 0.96,
+      fillColor: '#111111',
+      fillOpacity: 0.82,
+    },
+    satellite: {
+      color: '#ff5e5e',
+      weight: 1.6,
+      opacity: 1,
+      fillColor: '#ff5e5e',
+      fillOpacity: 0.92,
     },
   },
   borderStyle: {

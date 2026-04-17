@@ -1,4 +1,4 @@
-import { buildPlaceRows } from '../data/normalize.js';
+import { buildPlaceRows, buildSecondaryPlaceRows } from '../data/normalize.js';
 
 function iconForCountry(country, icons) {
   const normalized = String(country ?? '').trim().toLowerCase();
@@ -48,13 +48,17 @@ function createClusterIcon(cluster) {
 function createMarkersContainer(clusterConfig = {}) {
   if (clusterConfig.enabled !== false && typeof L.markerClusterGroup === 'function') {
     return L.markerClusterGroup({
-      maxClusterRadius: clusterConfig.maxClusterRadius ?? 32,
+      maxClusterRadius: clusterConfig.maxClusterRadius ?? 20,
       disableClusteringAtZoom: clusterConfig.disableClusteringAtZoom ?? 7,
       spiderfyOnMaxZoom: clusterConfig.spiderfyOnMaxZoom !== false,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
       removeOutsideVisibleBounds: true,
-      animate: true,
+      animate: false,
+      animateAddingMarkers: false,
+      chunkedLoading: true,
+      chunkInterval: 120,
+      chunkDelay: 30,
       iconCreateFunction: createClusterIcon,
       clusterPane: 'markers',
       spiderLegPolylineOptions: {
@@ -68,7 +72,7 @@ function createMarkersContainer(clusterConfig = {}) {
   return L.layerGroup();
 }
 
-export function createPlacesLayers(rawGeoJson, modal, icons, routeStyle, clusterConfig = {}) {
+export function createPlacesLayers(rawGeoJson, modal, icons, clusterConfig = {}) {
   const features = [...(rawGeoJson?.features ?? [])].sort((a, b) => {
     const left = Number(a.properties?.order ?? 0);
     const right = Number(b.properties?.order ?? 0);
@@ -76,7 +80,6 @@ export function createPlacesLayers(rawGeoJson, modal, icons, routeStyle, cluster
   });
 
   const markers = createMarkersContainer(clusterConfig);
-  const routeCoordinates = [];
 
   for (const feature of features) {
     const coords = feature?.geometry?.coordinates;
@@ -85,11 +88,13 @@ export function createPlacesLayers(rawGeoJson, modal, icons, routeStyle, cluster
     }
 
     const [lon, lat] = coords;
-    routeCoordinates.push([lat, lon]);
 
     const marker = L.marker([lat, lon], {
       icon: createPlaceIcon(feature, icons),
       pane: 'markers',
+      keyboard: true,
+      riseOnHover: true,
+      zIndexOffset: 1000,
       title: feature.properties?.name_modern || feature.properties?.name_input || 'Luogo',
     });
 
@@ -98,9 +103,11 @@ export function createPlacesLayers(rawGeoJson, modal, icons, routeStyle, cluster
       className: 'feature-tooltip',
       opacity: 0.95,
       offset: [0, -18],
+      sticky: true,
     });
 
-    marker.on('click', () => {
+    marker.on('click', (event) => {
+      L.DomEvent.stopPropagation(event);
       modal.open({
         kicker: 'Tappa missionaria',
         title: feature.properties?.name_modern || 'Luogo',
@@ -112,15 +119,63 @@ export function createPlacesLayers(rawGeoJson, modal, icons, routeStyle, cluster
     markers.addLayer(marker);
   }
 
-  const route = L.layerGroup();
-  if (routeCoordinates.length >= 2) {
-    route.addLayer(L.polyline(routeCoordinates, { ...routeStyle.glow, pane: 'route' }));
-    route.addLayer(L.polyline(routeCoordinates, { ...routeStyle.main, pane: 'route' }));
-  }
-
   return {
     markers,
-    route,
     orderedFeatures: features,
   };
+}
+
+function resolveSecondaryStyle(themeStyles, themeKey = 'dark') {
+  return themeStyles?.[themeKey] ?? themeStyles?.dark ?? {
+    radius: 5,
+    color: '#ff4b4b',
+    weight: 1.6,
+    opacity: 0.98,
+    fillColor: '#ff4b4b',
+    fillOpacity: 0.9,
+  };
+}
+
+export function createSecondaryTopoLayer(rawGeoJson, modal, radius = 5, themeStyles = {}, initialTheme = 'dark', map = null) {
+  const styleState = { current: resolveSecondaryStyle(themeStyles, initialTheme) };
+
+  const layer = L.geoJSON(rawGeoJson, {
+    pane: 'secondaryTopo',
+    renderer: map?.appRenderers?.secondaryTopo,
+    bubblingMouseEvents: false,
+    pointToLayer(feature, latlng) {
+      return L.circleMarker(latlng, {
+        radius,
+        ...styleState.current,
+      });
+    },
+    onEachFeature(feature, layer) {
+      const title = feature?.properties?.nome_antico || feature?.properties?.nome_moderno || 'Toponimo secondario';
+
+      layer.bindTooltip(title, {
+        direction: 'top',
+        className: 'feature-tooltip',
+        opacity: 0.95,
+        offset: [0, -8],
+        sticky: true,
+      });
+
+      layer.on('click', (event) => {
+        L.DomEvent.stopPropagation(event);
+        modal.open({
+          kicker: 'Toponimo menzionato',
+          title,
+          subtitle: feature?.properties?.display_name || 'Punto secondario dal layer other_topo.',
+          sections: [{ title: 'Dettagli', rows: buildSecondaryPlaceRows(feature) }],
+        });
+      });
+    },
+  });
+
+  function applyTheme(themeKey) {
+    styleState.current = resolveSecondaryStyle(themeStyles, themeKey);
+    layer.setStyle(styleState.current);
+  }
+
+  return { layer, applyTheme };
 }

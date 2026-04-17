@@ -6,6 +6,11 @@ function createButton({ label, icon, isActive = false }) {
   return button;
 }
 
+function toggleSection(section, trigger) {
+  const isCollapsed = section.classList.toggle('is-collapsed');
+  trigger.setAttribute('aria-expanded', String(!isCollapsed));
+}
+
 export function addMapToolbar({
   map,
   baseMaps,
@@ -64,17 +69,23 @@ export function addMapToolbar({
       L.DomEvent.disableScrollPropagation(container);
 
       container.innerHTML = `
-        <section class="map-toolbar__section">
+        <section class="map-toolbar__section" data-section="bases">
           <div class="map-toolbar__header">
             <h3 class="map-toolbar__title">Base raster</h3>
+            <button type="button" class="toolbar-toggle" data-toggle="bases" aria-expanded="true" aria-label="Comprimi base raster">
+              <i class="bi bi-chevron-up"></i>
+            </button>
           </div>
           <div class="map-toolbar__body">
             <div class="map-toolbar__grid map-toolbar__grid--bases" data-base-grid></div>
           </div>
         </section>
-        <section class="map-toolbar__section">
+        <section class="map-toolbar__section" data-section="layers">
           <div class="map-toolbar__header">
             <h3 class="map-toolbar__title">Livelli</h3>
+            <button type="button" class="toolbar-toggle" data-toggle="layers" aria-expanded="true" aria-label="Comprimi livelli">
+              <i class="bi bi-chevron-up"></i>
+            </button>
           </div>
           <div class="map-toolbar__body">
             <div class="map-toolbar__grid map-toolbar__grid--layers" data-overlay-grid></div>
@@ -123,6 +134,16 @@ export function addMapToolbar({
 
       container.querySelector('[data-action="close-modal"]').addEventListener('click', () => {
         document.getElementById('info-close')?.click();
+      });
+
+      container.querySelectorAll('.toolbar-toggle').forEach((trigger) => {
+        trigger.addEventListener('click', () => {
+          const key = trigger.dataset.toggle;
+          const section = container.querySelector(`[data-section="${key}"]`);
+          if (section) {
+            toggleSection(section, trigger);
+          }
+        });
       });
 
       return container;

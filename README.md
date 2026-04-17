@@ -52,3 +52,10 @@ Questo è configurato in `assets/js/config.js`.
 - Se il bordo rosso non compare, aumenta `sharedBorder.tolerance` in `assets/js/config.js` oppure pulisci i due poligoni statali.
 - Per rendere il clustering più o meno aggressivo, modifica `places.clustering.maxClusterRadius` in `assets/js/config.js`.
 - I percorsi sono tutti relativi, quindi la pubblicazione su GitHub Pages è diretta.
+
+
+## Nuovi layer supportati
+- `data/missionary_path.geojson`: percorso manuale, con `type`, `descrizione`, `lenght_km`.
+- `data/rivers.geojson`: corsi fluviali secondari, spenti di default.
+- `data/other_topo.geojson`: toponimi menzionati come tappe secondarie.
+- `images/ship.svg`: icona usata per i tratti `fluvial`.
